@@ -6,9 +6,6 @@
   <version>0.0.1-SNAPSHOT</version>
   <packaging>pom</packaging>
   <modules>
-  
-  <!-- maven build for WAR file -->
-  
     <!-- <module>FlightCountJAR</module> -->
     <module>FlightCountWAR</module>
     <!-- <module>FlightCountEAR</module> -->
