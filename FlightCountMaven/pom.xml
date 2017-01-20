@@ -8,6 +8,6 @@
   <modules>
     <!-- <module>FlightCountJAR</module> test for build 1 -->
     <module>FlightCountWAR</module>
-    <!-- <module>FlightCountEAR</module> -->
+    <module>FlightCountEAR</module>
   </modules>
 </project>
