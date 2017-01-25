@@ -6,7 +6,7 @@
   <version>0.0.1-SNAPSHOT</version>
   <packaging>pom</packaging>
   <modules>
-    <!-- <module>FlightCountJAR</module> test for build 1 -->
+    <!-- <module>FlightCountJAR</module> test for build 2 test for deployment -->
     <module>FlightCountWAR</module>
     <module>FlightCountEAR</module>
   </modules>
