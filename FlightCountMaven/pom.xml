@@ -7,8 +7,7 @@
   <packaging>pom</packaging>
   <modules>
     <!-- <module>FlightCountJAR</module> test for build 3 test for deployment -->
-    <!-- latest build check -->
-<!-- test -->
+    <!-- Biuld check -->
     <module>FlightCountWAR</module>
     <module>FlightCountEAR</module>
   </modules>
