@@ -1,0 +1,250 @@
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import com.atlassian.jira.ComponentManager;
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.issue.watchers.WatcherManager
+import com.atlassian.jira.user.util.UserManager
+import com.atlassian.jira.issue.CustomFieldManager;
+import com.atlassian.jira.issue.fields.CustomField;
+import com.atlassian.jira.issue.IssueManager;
+import com.atlassian.jira.issue.Issue;
+import com.atlassian.jira.issue.MutableIssue;
+import com.atlassian.jira.issue.customfields.option.Option;
+import org.apache.log4j.Logger
+import org.apache.log4j.Level
+//CustomFieldManager customFieldManager=ComponentManager.getInstance().getCustomFieldManager();
+def issueManager = ComponentAccessor.getIssueManager()
+def customFieldManager = ComponentAccessor.getCustomFieldManager()
+CustomField customField_Key=customFieldManager.getCustomFieldObjectByName("Project Key");
+CustomField customField_Name=customFieldManager.getCustomFieldObjectByName("Project Name");
+CustomField customField_DevOpsTools=customFieldManager.getCustomFieldObjectByName("DevOps Tools");
+CustomField customField_RepositoryType=customFieldManager.getCustomFieldObjectByName("Repository Type");
+CustomField customField_AzureDevOpsProcessType=customFieldManager.getCustomFieldObjectByName("Azure DevOps Process Type");
+CustomField customField_AzureDevOpsSourceControl=customFieldManager.getCustomFieldObjectByName("Azure DevOps Source Control");
+Issue issue = issue;
+def key=issue.getCustomFieldValue(customField_Key);
+def name=issue.getCustomFieldValue(customField_Name);
+def devopstools=issue.getCustomFieldValue(customField_DevOpsTools);
+def repositorytype=issue.getCustomFieldValue(customField_RepositoryType);
+def Process_Type=issue.getCustomFieldValue(customField_AzureDevOpsProcessType);
+def Source_Control=issue.getCustomFieldValue(customField_AzureDevOpsSourceControl);
+//def log = Logger.getLogger("com.example.script")
+def log = Logger.getLogger("com.post.trigger")
+log.setLevel(Level.DEBUG)
+def Issueid=issue.getKey()
+log.error "Debug message"
+log.info ("Testing Info Logging");
+log.debug ("Testing Debug Logging" + issue.getKey());
+//def curl = "curl -uAdmin:Admin http://10.238.35.37:8080/job/Project_Onboarding/buildWithParameters?token=jiratrigger&Key=$key&Name=$name&Issueid=$Issueid"
+//def output = curl.execute().text
+//log.info (output)
+//println output;
+
+ArrayList options =(ArrayList)issue.getCustomFieldValue(customField_DevOpsTools);
+for(int i=0;i<options.size();i++) {
+String comp = options.get(i);
+    if(comp.equals("None")) {
+      //def curl = "C:/Softwares/curl/curl.exe http://10.155.143.118:8080/job/L3_Cash/buildWithParameters?Issue_id=$Issueid&Version=$version"
+       //def curl = "curl -uAdmin:Admin http://10.238.35.37:8080/job/Create_Project_In_Jenkins/buildWithParameters?token=jenkins&Key=$key&Name=$name&Issueid=$Issueid"
+       //def output = curl.execute().text
+       log.info ("DevOps Tools are not required for the project")
+         }
+     if(comp.equals("VSTS Dev")) {
+      //def curl = "C:/Softwares/curl/curl.exe http://10.155.143.118:8080/job/L3_Cash/buildWithParameters?Issue_id=$Issueid&Version=$version"
+         log.info ("Executing VSTS DEV Onbording")
+       def curl = "curl -uAdmin:Admin http://10.238.35.37:8080/job/Create_Project_In_VSTS/buildWithParameters?token=vsts&Key=$key&Name=$name&Issueid=$Issueid"
+       def output = curl.execute().text
+         log.info ("Completed Executing VSTS DEV Onboarding")
+         }
+    if(comp.equals("Azure DevOps")) {
+      //def curl = "C:/Softwares/curl/curl.exe http://10.155.143.118:8080/job/L3_Cash/buildWithParameters?Issue_id=$Issueid&Version=$version"
+         log.info ("Executing Azure DevOps Onboarding")
+       def curl = "curl -uAdmin:Admin http://10.238.35.37:8080/job/Create_Project_In_VSTS_Prod/buildWithParameters?token=azuredevops&Key=$key&Name=$name&Issueid=$Issueid&Process_Type=$Process_Type&Source_Control=$Source_Control"
+       def output = curl.execute().text
+         log.info ("Completed Executing Azure DevOps Onboarding")
+         }
+   if(comp.equals("Jenkins")) {
+      //def curl = "C:/Softwares/curl/curl.exe http://10.155.143.118:8080/job/L3_Cash/buildWithParameters?Issue_id=$Issueid&Version=$version"
+       log.info ("Executing Jenkins Onboarding")
+       def curl = "curl -uAdmin:Admin http://10.238.35.37:8080/job/Create_Project_In_Jenkins/buildWithParameters?token=jenkins&Key=$key&Name=$name&Issueid=$Issueid"
+       def output = curl.execute().text
+       log.info ("Completed Executing Jenkins Onboarding")
+         }
+     if(comp.equals("Bitbucket")) {
+       //def curl = "curl -X POST https://dev.bitbucket.vikash.com/rest/api/1.0/projects -v -u Admin:Admin -d '{"key":"'$Key'","name":"'$Name'"}' --insecure"
+         log.info ("Executing Bitbucket Onboarding")
+       def curl = "curl -uAdmin:Admin http://10.238.35.37:8080/job/Create_Project_In_Bitbucket/buildWithParameters?token=bitbucket&Key=$key&Name=$name&Issueid=$Issueid"
+         def output = curl.execute().text
+         log.info ("Completed Executing Bitbucket Onboarding")
+   }
+     if(comp.equals("SonarQube")) {
+         log.info ("Executing SonarQube Onboarding");
+       //def curl = "C:/Softwares/curl/curl.exe http://10.155.143.118:8080/job/L3_Credit/buildWithParameters?Issue_id=$Issueid&Version=$version"
+       def curl = "curl -uAdmin:Admin http://10.238.35.37:8080/job/Create_Project_In_SonarQube/buildWithParameters?token=sonar&Key=$key&Name=$name&Issueid=$Issueid"
+         def output = curl.execute().text
+         log.info ("Completed Executing SonarQube Onboarding")
+   }
+     if(comp.equals("Artifactory")) {
+      //def curl = "C:/Softwares/curl/curl.exe http://10.155.143.118:8080/job/L3_LRT/buildWithParameters?Issue_id=$Issueid&Version=$version"
+       def curl = "curl -uAdmin:Admin http://10.238.35.37:8080/job/Create_Project_In_Artifactory/buildWithParameters?token=artifactory&Key=$key&Name=$name&Issueid=$Issueid"
+         def output = curl.execute().text
+   }
+     if(comp.equals("TFS")) {
+       //def curl = "C:/Softwares/curl/curl.exe http://10.155.143.118:8080/job/L3_ParameterRecs/buildWithParameters?Issue_id=$Issueid&Version=$version"
+       def curl = "curl -uAdmin:Admin http://10.238.35.37:8080/job/Create_Project_In_TFS/buildWithParameters?token=tfs&Key=$key&Name=$name&Issueid=$Issueid"
+         def output = curl.execute().text
+   }
+    if(comp.equals("Team City")) {
+       //def curl = "C:/Softwares/curl/curl.exe http://10.155.143.118:8080/job/L3_Pmt/buildWithParameters?Issue_id=$Issueid&Version=$version"
+        log.info ("Executing TeamCity Onboarding")
+       def curl = "curl -uAdmin:Admin http://10.238.35.37:8080/job/Create_Project_In_TeamCity/buildWithParameters?token=teamcity&Key=$key&Name=$name&Issueid=$Issueid"
+        def output = curl.execute().text
+        log.info ("Completed Executing TeamCity Onboarding")
+   } 
+    if(comp.equals("Octopus Deploy")) {
+       //def curl = "C:/Softwares/curl/curl.exe http://10.155.143.118:8080/job/T24_Static/buildWithParameters?Issue_id=$Issueid&Version=$version"
+        log.info ("Executing Octopus Deploy Onboarding")
+       def curl = "curl -uAdmin:Admin http://10.238.35.37:8080/job/Create_Project_In_OctopusDeploy/buildWithParameters?token=octopusdeploy&Key=$key&Name=$name&Issueid=$Issueid"
+        def output = curl.execute().text
+        log.info ("Completed Executing Octopus Deploy Onboarding")
+  } 
+}
+
+ArrayList optionsrepo =(ArrayList)issue.getCustomFieldValue(customField_RepositoryType);
+for(int i=0;i<optionsrepo.size();i++) {
+String comprepo = optionsrepo.get(i);
+    if(comprepo.equals("None")) {
+      //def curl = "C:/Softwares/curl/curl.exe http://10.155.143.118:8080/job/L3_Cash/buildWithParameters?Issue_id=$Issueid&Version=$version"
+       //def curl = "curl -uAdmin:Admin http://10.238.35.37:8080/job/Create_Project_In_Jenkins/buildWithParameters?token=jenkins&Key=$key&Name=$name&Issueid=$Issueid"
+       //def output = curl.execute().text
+       log.info ("Artifactory repositories are not required for the project")
+         }
+    if (comprepo.equals("Bower")){
+        log.info ("Executing Bower") 
+       def curl = "curl -uAdmin:Admin http://10.238.35.37:8080/job/ArtifactoryAPI_Integration_Bower/buildWithParameters?token=bower&Name=$name&Issueid=$Issueid"
+        log.info("Bower Completed");
+    }
+    if (comprepo.equals("Chef")){
+        log.info ("Executing Chef")
+       def curl = "curl -uAdmin:Admin http://10.238.35.37:8080/job/ArtifactoryAPI_Integration_Chef/buildWithParameters?token=chef&Name=$name&Issueid=$Issueid"
+        def output = curl.execute().text
+        log.info("Chef Completed");
+    }
+    if (comprepo.equals("CocoaPods")){
+        log.info ("Executing CocoaPods")
+       def curl = "curl -uAdmin:Admin http://10.238.35.37:8080/job/ArtifactoryAPI_Integration_CocoaPods/buildWithParameters?token=cocoapods&Name=$name&Issueid=$Issueid"
+        def output = curl.execute().text
+        log.info("CocoaPods Completed");
+    }
+    if (comprepo.equals("Composer")){
+        log.info ("Executing Composer")
+       def curl = "curl -uAdmin:Admin http://10.238.35.37:8080/job/ArtifactoryAPI_Integration_Composer/buildWithParameters?token=composer&Name=$name&Issueid=$Issueid"
+        def output = curl.execute().text
+        log.info("Composer Completed");
+    }
+    if (comprepo.equals("Conan")){
+        log.info ("Executing Conan")
+       def curl = "curl -uAdmin:Admin http://10.238.35.37:8080/job/ArtifactoryAPI_Integration_Conan/buildWithParameters?token=conan&Name=$name&Issueid=$Issueid"
+        def output = curl.execute().text
+        log.info("Conan Completed");
+    }
+    if (comprepo.equals("Debian")){
+        log.info ("Executing Debian")
+       def curl = "curl -uAdmin:Admin http://10.238.35.37:8080/job/ArtifactoryAPI_Integration_Debian/buildWithParameters?token=debian&Name=$name&Issueid=$Issueid"
+        def output = curl.execute().text
+        log.info("Debian Completed");
+    } 
+    if (comprepo.equals("Docker")){
+        log.info ("Executing Docker")
+       def curl = "curl -uAdmin:Admin http://10.238.35.37:8080/job/ArtifactoryAPI_Integration_Docker/buildWithParameters?token=docker&Name=$name&Issueid=$Issueid"
+        def output = curl.execute().text
+        log.info("Docker Completed");
+    } 
+    if (comprepo.equals("Gems")){
+        log.info ("Executing Gems")
+       def curl = "curl -uAdmin:Admin http://10.238.35.37:8080/job/ArtifactoryAPI_Integration_Gems/buildWithParameters?token=gems&Name=$name&Issueid=$Issueid"
+        def output = curl.execute().text
+        log.info("Gems Completed");
+    } 
+    if (comprepo.equals("Generic")){
+        log.info ("Executing Generic")
+       def curl = "curl -uAdmin:Admin http://10.238.35.37:8080/job/ArtifactoryAPI_Integration_Generic/buildWithParameters?token=generic&Name=$name&Issueid=$Issueid"
+        def output = curl.execute().text
+        log.info("Generic Completed");
+    }
+    if (comprepo.equals("Gitlfs")){
+        log.info ("Executing Gitlfs")
+       def curl = "curl -uAdmin:Admin http://10.238.35.37:8080/job/ArtifactoryAPI_Integration_GitLFS/buildWithParameters?token=gitlfs&Name=$name&Issueid=$Issueid"
+        def output = curl.execute().text
+        log.info("Gitlfs Completed");
+    } 
+    if (comprepo.equals("Gradle")){
+        log.info ("Executing Gradle")
+       def curl = "curl -uAdmin:Admin http://10.238.35.37:8080/job/ArtifactoryAPI_Integration_Gradle/buildWithParameters?token=gradle&Name=$name&Issueid=$Issueid"
+        def output = curl.execute().text
+        log.info("Gradle Completed");
+    } 
+    if (comprepo.equals("Ivy")){
+        log.info ("Executing Ivy")
+       def curl = "curl -uAdmin:Admin http://10.238.35.37:8080/job/ArtifactoryAPI_Integration_Ivy/buildWithParameters?token=ivy&Name=$name&Issueid=$Issueid"
+        def output = curl.execute().text
+        log.info("Ivy Completed");
+    }
+     if (comprepo.equals("Maven")){
+        log.info ("Executing Maven")
+       def curl = "curl -uAdmin:Admin http://10.238.35.37:8080/job/ArtifactoryAPI_Integration_Maven/buildWithParameters?token=maven&Name=$name&Issueid=$Issueid"
+        def output = curl.execute().text
+        log.info("Maven Completed");
+    }
+    if (comprepo.equals("NPM")){
+        log.info ("Executing NPM")
+       def curl = "curl -uAdmin:Admin http://10.238.35.37:8080/job/ArtifactoryAPI_Integration_NPM/buildWithParameters?token=npm&Name=$name&Issueid=$Issueid"
+        def output = curl.execute().text
+        log.info("NPM Completed");
+    }  
+      if (comprepo.equals("NuGet")){
+        log.info ("Executing NuGet")
+       def curl = "curl -uAdmin:Admin http://10.238.35.37:8080/job/ArtifactoryAPI_Integration_Nuget/buildWithParameters?token=nuget&Name=$name&Issueid=$Issueid"
+        def output = curl.execute().text
+        log.info("NuGet Completed");
+    } 
+    if (comprepo.equals("Opkg")){
+        log.info ("Executing Opkg")
+       def curl = "curl -uAdmin:Admin http://10.238.35.37:8080/job/ArtifactoryAPI_Integration_Opkg/buildWithParameters?token=opkg&Name=$name&Issueid=$Issueid"
+        def output = curl.execute().text
+        log.info("Opkg Completed");
+    }
+    if (comprepo.equals("Puppet")){
+        log.info ("Executing Puppet")
+       def curl = "curl -uAdmin:Admin http://10.238.35.37:8080/job/ArtifactoryAPI_Integration_Puppet/buildWithParameters?token=puppet&Name=$name&Issueid=$Issueid"
+        def output = curl.execute().text
+        log.info("Puppet Completed");
+    }
+    if (comprepo.equals("PyPi")){
+        log.info ("Executing PyPi")
+       def curl = "curl -uAdmin:Admin http://10.238.35.37:8080/job/ArtifactoryAPI_Integration_PyPI/buildWithParameters?token=pypi&Name=$name&Issueid=$Issueid"
+        def output = curl.execute().text
+        log.info("PyPi Completed");
+    }
+    if (comprepo.equals("RPM")){
+        log.info ("Executing RPM")
+       def curl = "curl -uAdmin:Admin http://10.238.35.37:8080/job/ArtifactoryAPI_Integration_RPM/buildWithParameters?token=rpm&Name=$name&Issueid=$Issueid"
+        def output = curl.execute().text
+        log.info("RPM Completed");
+    }
+    if (comprepo.equals("Sbt")){
+        log.info ("Executing Sbt")
+       def curl = "curl -uAdmin:Admin http://10.238.35.37:8080/job/ArtifactoryAPI_Integration_SBT/buildWithParameters?token=sbt&Name=$name&Issueid=$Issueid"
+        def output = curl.execute().text
+        log.info("Sbt Completed");
+    }
+    if (comprepo.equals("Vagrant")){
+        log.info ("Executing Vagrant")
+       def curl = "curl -uAdmin:Admin http://10.238.35.37:8080/job/ArtifactoryAPI_Integration_Vagrant/buildWithParameters?token=vagrant&Name=$name&Issueid=$Issueid"
+        def output = curl.execute().text
+        log.info("Vagrant Completed");
+    }
+}
+
+
